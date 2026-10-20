@@ -1,0 +1,20 @@
+{
+  "name": "basic-writing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cau-ghep.js",
+  "scripts": {
+    "build": "babel . --out-dir dist --ignore node_modules,dist",
+    "watch": "babel . --out-dir dist --ignore node_modules,dist --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@babel/cli": "^7.29.7",
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-react": "^7.29.7"
+  }
+}
