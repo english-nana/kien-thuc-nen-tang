@@ -263,6 +263,261 @@ const FormatVerb = ({ text }) => {
             );
         };
 
+        const normalizeTranslation = (text) => String(text || "")
+            .replace(/[‘’]/g, "'")
+            .replace(/\bI'm\b/gi, "i am")
+            .replace(/\bI'll\b/gi, "i will")
+            .replace(/\bI've\b/gi, "i have")
+            .replace(/\bwe've\b/gi, "we have")
+            .replace(/\bthey've\b/gi, "they have")
+            .replace(/\bwe're\b/gi, "we are")
+            .replace(/\bshe's\b/gi, "she has")
+            .replace(/\bhe's\b/gi, "he has")
+            .replace(/\bdon't\b/gi, "do not")
+            .replace(/\bdoesn't\b/gi, "does not")
+            .replace(/\bdidn't\b/gi, "did not")
+            .replace(/\bwon't\b/gi, "will not")
+            .replace(/\bhaven't\b/gi, "have not")
+            .replace(/\bhasn't\b/gi, "has not")
+            .replace(/\baren't\b/gi, "are not")
+            .replace(/\bisn't\b/gi, "is not")
+            .replace(/\bp\.m\.\b/gi, "pm")
+            .replace(/\ba\.m\.\b/gi, "am")
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+
+        const VerbTranslationExercise = ({ num, title, desc, items }) => {
+            const [resetKey, setResetKey] = useState(0);
+
+            return (
+                <div className="mt-6 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm relative z-10">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-100">
+                        <div>
+                            <div className="flex items-center gap-3 mb-1.5">
+                                <span className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white bg-slate-800 shadow-sm shrink-0">{num}</span>
+                                <h4 className="text-base sm:text-lg font-bold text-slate-900">{title}</h4>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-500 sm:ml-11">{desc}</p>
+                        </div>
+                        <button
+                            onClick={() => setResetKey(k => k + 1)}
+                            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-colors shrink-0"
+                        >
+                            <Repeat size={14} />
+                            Làm lại tất cả
+                        </button>
+                    </div>
+
+                    <div className="space-y-4">
+                        {items.map((item, idx) => (
+                            <VerbTranslationCard key={`${idx}-${resetKey}`} item={item} index={idx} />
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const VerbTranslationCard = ({ item, index }) => {
+            const [selectedSubj, setSelectedSubj] = useState(null);
+            const [selectedVerb, setSelectedVerb] = useState(null);
+            const [selectedTense, setSelectedTense] = useState(null);
+            const [sentence, setSentence] = useState("");
+            const [checkStatus, setCheckStatus] = useState("idle"); // idle | correct | wrong | revealed
+
+            const isSubjCorrect = selectedSubj === item.subject;
+            const isVerbCorrect = selectedVerb === item.verb;
+            const isTenseCorrect = selectedTense === item.tense;
+            const isAnalysisComplete = isSubjCorrect && isVerbCorrect && isTenseCorrect;
+
+            const handleCheckSentence = () => {
+                if (!sentence.trim()) return;
+                const userNorm = normalizeTranslation(sentence);
+                const allAccepted = [item.en, ...(item.accepted || [])];
+                const matched = allAccepted.some(ans => normalizeTranslation(ans) === userNorm);
+                setCheckStatus(matched ? "correct" : "wrong");
+            };
+
+            const handleReveal = () => {
+                setSelectedSubj(item.subject);
+                setSelectedVerb(item.verb);
+                setSelectedTense(item.tense);
+                setSentence(item.en);
+                setCheckStatus("revealed");
+            };
+
+            const handleResetOne = () => {
+                setSelectedSubj(null);
+                setSelectedVerb(null);
+                setSelectedTense(null);
+                setSentence("");
+                setCheckStatus("idle");
+            };
+
+            const renderOptionBtn = (opt, selectedVal, correctVal, onSelect) => {
+                const isSelected = selectedVal === opt;
+                const isRight = opt === correctVal;
+
+                let cls = "px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium border transition-all ";
+                if (!isSelected) {
+                    cls += "bg-white text-slate-700 border-slate-200 hover:border-slate-400";
+                } else if (isRight) {
+                    cls += "bg-slate-800 text-white border-slate-800 font-semibold shadow-sm";
+                } else {
+                    cls += "bg-rose-50 text-rose-700 border-rose-300 font-semibold";
+                }
+
+                return (
+                    <button
+                        key={opt}
+                        type="button"
+                        onClick={() => onSelect(opt)}
+                        className={cls}
+                    >
+                        {opt}
+                        {isSelected && !isRight && <span className="ml-1 text-rose-500">✕</span>}
+                        {isSelected && isRight && <span className="ml-1 text-emerald-400">✓</span>}
+                    </button>
+                );
+            };
+
+            return (
+                <div className={`rounded-xl border p-4 sm:p-5 transition-colors ${checkStatus === "correct" ? "border-emerald-300 bg-emerald-50/20" : "border-slate-200 bg-slate-50/40"}`}>
+                    {/* Câu tiếng Việt */}
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                        <div className="flex items-start gap-2.5">
+                            <span className="w-6 h-6 rounded-md bg-slate-200/80 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                                {index + 1}
+                            </span>
+                            <div>
+                                <p className="font-bold text-slate-900 text-sm sm:text-base leading-snug">{item.vn}</p>
+                                {item.vocab && (
+                                    <p className="text-xs text-slate-500 mt-1">
+                                        <span className="font-semibold text-slate-600">Từ vựng:</span> {item.vocab}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                        {(selectedSubj || selectedVerb || selectedTense || sentence) && (
+                            <button
+                                type="button"
+                                onClick={handleResetOne}
+                                className="text-xs font-semibold text-slate-400 hover:text-slate-600 shrink-0"
+                            >
+                                Làm lại
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Bước 1: Xác định Chủ ngữ - Động từ - Thì */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 bg-white p-3.5 rounded-xl border border-slate-200/80">
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">1. Chủ ngữ (S)</span>
+                                {isSubjCorrect && <span className="text-[11px] font-semibold text-emerald-600">Đúng</span>}
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                                {item.subjectOptions.map(opt => renderOptionBtn(opt, selectedSubj, item.subject, setSelectedSubj))}
+                            </div>
+                        </div>
+
+                        <div className="md:border-l md:border-slate-100 md:pl-3">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">2. Động từ (V)</span>
+                                {isVerbCorrect && <span className="text-[11px] font-semibold text-emerald-600">Đúng</span>}
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                                {item.verbOptions.map(opt => renderOptionBtn(opt, selectedVerb, item.verb, setSelectedVerb))}
+                            </div>
+                        </div>
+
+                        <div className="md:border-l md:border-slate-100 md:pl-3">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">3. Thì cần chia</span>
+                                {isTenseCorrect && <span className="text-[11px] font-semibold text-emerald-600">Đúng</span>}
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                                {item.tenseOptions.map(opt => renderOptionBtn(opt, selectedTense, item.tense, setSelectedTense))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Gợi ý công thức khi đã xác định đúng 3 yếu tố */}
+                    {isAnalysisComplete && (
+                        <div className="mb-3 px-3.5 py-2 rounded-lg bg-slate-100 border border-slate-200 text-xs sm:text-sm text-slate-700 flex flex-wrap items-center gap-x-2 gap-y-1 animate-pop">
+                            <span className="font-semibold text-slate-900">Khung chia động từ:</span>
+                            <span className="font-mono font-bold text-blue-700 bg-white px-2 py-0.5 rounded border border-slate-200">{item.conjugatedHint}</span>
+                            <span className="text-slate-500">— {item.tenseReason}</span>
+                        </div>
+                    )}
+
+                    {/* Bước 2: Dịch câu sang tiếng Anh */}
+                    <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                            4. Dịch sang câu tiếng Anh hoàn chỉnh
+                        </label>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                            <input
+                                type="text"
+                                value={sentence}
+                                onChange={(e) => {
+                                    setSentence(e.target.value);
+                                    if (checkStatus === "wrong") setCheckStatus("idle");
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") handleCheckSentence();
+                                }}
+                                disabled={checkStatus === "correct"}
+                                placeholder="Nhập câu tiếng Anh của bạn vào đây..."
+                                className={`flex-1 rounded-xl border px-3.5 py-2.5 text-sm sm:text-base outline-none transition-all ${
+                                    checkStatus === "correct"
+                                        ? "border-emerald-400 bg-emerald-50/40 text-emerald-900 font-semibold"
+                                        : checkStatus === "wrong"
+                                        ? "border-rose-300 bg-white text-slate-800"
+                                        : "border-slate-200 bg-white text-slate-800 focus:border-slate-400"
+                                }`}
+                            />
+                            <div className="flex items-center gap-2 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={handleCheckSentence}
+                                    disabled={checkStatus === "correct" || !sentence.trim()}
+                                    className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    {checkStatus === "correct" ? "Chính xác ✓" : "Kiểm tra"}
+                                </button>
+                                {checkStatus !== "correct" && (
+                                    <button
+                                        type="button"
+                                        onClick={handleReveal}
+                                        className="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
+                                    >
+                                        Xem đáp án
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {checkStatus === "wrong" && (
+                            <div className="mt-2.5 text-xs sm:text-sm text-rose-700 bg-rose-50/80 border border-rose-200 rounded-lg px-3.5 py-2.5">
+                                Câu dịch chưa chính xác. Hãy kiểm tra lại cách chia động từ <strong>{item.conjugatedHint}</strong> hoặc chính tả các từ trong câu nhé.
+                            </div>
+                        )}
+
+                        {(checkStatus === "correct" || checkStatus === "revealed") && (
+                            <div className="mt-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-lg px-3.5 py-2.5 text-slate-700">
+                                <div className="font-bold text-slate-900 mb-0.5">
+                                    Đáp án chuẩn: <span className="text-emerald-700">{item.en}</span>
+                                </div>
+                                <div className="text-slate-500">{item.exp}</div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
         const MiniQuiz = ({ title, num, desc, questions, color = "blue" }) => {
             const [ans, setAns] = useState({});
             const [showRes, setShowRes] = useState(false);
@@ -457,28 +712,147 @@ const FormatVerb = ({ text }) => {
                     ]}
                 />
 
-                <MiniQuiz 
-                    color="blue" num="1" title="Bài tập: Dấu hiệu nhận biết thì" desc="Chọn đáp án đúng dựa vào từ khóa chỉ thời gian trong câu (7 câu)."
-                    questions={[
-                    { text: "I usually ________ overtime on Fridays to finish my work.", options: ["work", "worked", "will work"], correct: "work", exp: "'usually' (thường xuyên) là dấu hiệu của thói quen ở Hiện tại đơn." },
-                    { text: "We ________ the contract with the new client yesterday.", options: ["sign", "signed", "are signing"], correct: "signed", exp: "'yesterday' (hôm qua) là dấu hiệu của Quá khứ đơn." },
-                    { text: "They ________ a new apartment next month.", options: ["rent", "rented", "will rent"], correct: "will rent", exp: "'next month' (tháng tới) là dấu hiệu của Tương lai đơn." },
-                    { text: "Look! The children ________ in the garden.", options: ["play", "are playing", "played"], correct: "are playing", exp: "'Look!' (Nhìn kìa!) cho thấy sự việc đang xảy ra ngay lúc nói -> Hiện tại tiếp diễn." },
-                    { text: "I ________ this movie three times already.", options: ["watch", "watched", "have watched"], correct: "have watched", exp: "'already' hoặc đếm số lần (three times) là dấu hiệu của trải nghiệm trong Hiện tại hoàn thành." },
-                    { text: "We ________ for this company since 2018.", options: ["work", "worked", "have worked"], correct: "have worked", exp: "'since + mốc thời gian' (từ năm 2018) là dấu hiệu của thì Hiện tại hoàn thành." },
-                    { text: "Currently, the government ________ new policies to combat inflation.", options: ["implements", "is implementing", "implemented"], correct: "is implementing", exp: "'Currently' (hiện tại, dạo này) là dấu hiệu của thì Hiện tại tiếp diễn." }
-                    ]}
-                />
-                <MiniQuiz 
-                    color="blue" num="2" title="Bài tập: Chia động từ cơ bản" desc="Chọn dạng động từ phù hợp với chủ ngữ và ngữ cảnh (7 câu)."
-                    questions={[
-                    { text: "My manager ________ alcohol. He only drinks water.", options: ["don't drink", "doesn't drink"], correct: "doesn't drink", exp: "Chủ ngữ 'My manager' là ngôi thứ 3 số ít (He/She) nên phải dùng mượn trợ động từ doesn't." },
-                    { text: "I ________ breakfast this morning because I was late.", options: ["don't eat", "didn't eat", "won't eat"], correct: "didn't eat", exp: "'this morning' (sáng nay - việc đã qua) và vế sau 'was late' (quá khứ) -> Dùng quá khứ đơn (didn't eat)." },
-                    { text: "The earth ________ around the sun.", options: ["go", "goes", "is going"], correct: "goes", exp: "Một sự thật hiển nhiên luôn đúng -> Hiện tại đơn. 'The earth' số ít nên 'go' thêm 'es'." },
-                    { text: "I promise I ________ anyone your secret.", options: ["don't tell", "didn't tell", "won't tell"], correct: "won't tell", exp: "'promise' (hứa hẹn) là quyết định đưa ra ngay lúc nói, luôn dùng Tương lai đơn (will/won't)." },
-                    { text: "She ________ to London recently.", options: ["doesn't travel", "didn't travel", "hasn't traveled"], correct: "hasn't traveled", exp: "'recently' (gần đây) là dấu hiệu kinh điển của thì Hiện tại hoàn thành (have/has + V3/ed)." },
-                    { text: "The committee ________ a meeting at this exact moment.", options: ["holds", "is holding", "has held"], correct: "is holding", exp: "'at this exact moment' (ngay tại khoảnh khắc này) yêu cầu thì Hiện tại tiếp diễn." },
-                    { text: "Despite the difficulties, they ________ to finish the project on time last week.", options: ["manage", "are managing", "managed"], correct: "managed", exp: "Trạng từ 'last week' ở cuối câu ấn định chắc chắn đây là sự kiện đã chốt trong Quá khứ đơn." }
+                <VerbTranslationExercise
+                    num="1"
+                    title="Bài tập: Diễn đạt câu thực tế sang tiếng Anh"
+                    desc="Với mỗi câu tiếng Việt dưới đây, hãy xác định Chủ ngữ, Động từ chính, Thì cần chia, sau đó viết câu tiếng Anh hoàn chỉnh (7 câu)."
+                    items={[
+                        {
+                            vn: "Tôi thường kiểm tra email công việc vào mỗi buổi sáng.",
+                            vocab: "usually (thường) · work emails (email công việc) · every morning (mỗi buổi sáng)",
+                            subject: "I",
+                            subjectOptions: ["I", "Work emails", "Every morning"],
+                            verb: "check",
+                            verbOptions: ["check", "send", "write"],
+                            tense: "Hiện tại đơn",
+                            tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn", "Hiện tại tiếp diễn", "Hiện tại hoàn thành"],
+                            conjugatedHint: "I + check (nguyên mẫu)",
+                            tenseReason: "Hành động lặp đi lặp lại theo thói quen",
+                            en: "I usually check work emails every morning.",
+                            accepted: [
+                                "I usually check my work emails every morning.",
+                                "I usually check work email every morning.",
+                                "Every morning I usually check work emails."
+                            ],
+                            exp: "Thói quen lặp đi lặp lại mỗi sáng → dùng Hiện tại đơn. Chủ ngữ 'I' đi với động từ nguyên mẫu 'check'."
+                        },
+                        {
+                            vn: "Anh trai tôi làm việc tại một ngân hàng lớn.",
+                            vocab: "my brother (anh trai tôi) · at a big bank (tại một ngân hàng lớn)",
+                            subject: "My brother",
+                            subjectOptions: ["My brother", "I", "A big bank"],
+                            verb: "work",
+                            verbOptions: ["work", "do", "stay"],
+                            tense: "Hiện tại đơn",
+                            tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn", "Hiện tại tiếp diễn", "Hiện tại hoàn thành"],
+                            conjugatedHint: "My brother + works (thêm -s)",
+                            tenseReason: "Thông tin cá nhân / sự thật ở hiện tại",
+                            en: "My brother works at a big bank.",
+                            accepted: [
+                                "My brother works in a big bank.",
+                                "My brother works at a large bank.",
+                                "My brother works in a large bank."
+                            ],
+                            exp: "Nói về thông tin thực tế ở hiện tại → dùng Hiện tại đơn. Chủ ngữ 'My brother' là số ít nên 'work' thêm -s thành 'works'."
+                        },
+                        {
+                            vn: "Hôm qua chúng tôi đã ký hợp đồng với khách hàng mới.",
+                            vocab: "the contract (hợp đồng) · with the new client (với khách hàng mới) · yesterday (hôm qua)",
+                            subject: "We",
+                            subjectOptions: ["We", "The contract", "The new client"],
+                            verb: "sign",
+                            verbOptions: ["sign", "buy", "make"],
+                            tense: "Quá khứ đơn",
+                            tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn", "Hiện tại tiếp diễn", "Hiện tại hoàn thành"],
+                            conjugatedHint: "We + signed (V2/ed)",
+                            tenseReason: "Sự việc đã xảy ra và kết thúc ngày hôm qua",
+                            en: "We signed the contract with the new client yesterday.",
+                            accepted: [
+                                "Yesterday we signed the contract with the new client.",
+                                "We signed a contract with the new client yesterday.",
+                                "We signed the contract with a new client yesterday."
+                            ],
+                            exp: "Sự kiện đã xảy ra và kết thúc trong quá khứ ('hôm qua') → dùng Quá khứ đơn. Động từ 'sign' thêm -ed thành 'signed'."
+                        },
+                        {
+                            vn: "Sáng nay cô ấy đã không tham dự cuộc họp.",
+                            vocab: "attend (tham dự) · the meeting (cuộc họp) · this morning (sáng nay)",
+                            subject: "She",
+                            subjectOptions: ["She", "The meeting", "This morning"],
+                            verb: "attend",
+                            verbOptions: ["attend", "speak", "open"],
+                            tense: "Quá khứ đơn",
+                            tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn", "Hiện tại tiếp diễn", "Hiện tại hoàn thành"],
+                            conjugatedHint: "She + didn't attend (didn't + Vo)",
+                            tenseReason: "Sự việc đã qua trong quá khứ ở thể phủ định",
+                            en: "She didn't attend the meeting this morning.",
+                            accepted: [
+                                "She did not attend the meeting this morning.",
+                                "This morning she didn't attend the meeting.",
+                                "This morning she did not attend the meeting."
+                            ],
+                            exp: "Việc không tham dự đã diễn ra vào sáng nay → Quá khứ đơn phủ định: mượn trợ động từ 'didn't' + động từ nguyên mẫu 'attend'."
+                        },
+                        {
+                            vn: "Tôi sẽ gửi báo cáo cho bạn vào chiều nay.",
+                            vocab: "the report (báo cáo) · to you (cho bạn) · this afternoon (chiều nay)",
+                            subject: "I",
+                            subjectOptions: ["I", "You", "The report"],
+                            verb: "send",
+                            verbOptions: ["send", "read", "keep"],
+                            tense: "Tương lai đơn",
+                            tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn", "Hiện tại tiếp diễn", "Hiện tại hoàn thành"],
+                            conjugatedHint: "I + will send (will + Vo)",
+                            tenseReason: "Quyết định hoặc lời hứa sẽ làm trong tương lai",
+                            en: "I will send the report to you this afternoon.",
+                            accepted: [
+                                "I'll send the report to you this afternoon.",
+                                "I will send you the report this afternoon.",
+                                "I'll send you the report this afternoon."
+                            ],
+                            exp: "Đưa ra lời hứa / quyết định sẽ làm → dùng Tương lai đơn: 'will + Vo' (will send)."
+                        },
+                        {
+                            vn: "Dạo này chúng tôi đang tìm một căn hộ mới.",
+                            vocab: "look for (tìm kiếm) · a new apartment (một căn hộ mới) · these days (dạo này)",
+                            subject: "We",
+                            subjectOptions: ["We", "A new apartment", "These days"],
+                            verb: "look for",
+                            verbOptions: ["look for", "live", "build"],
+                            tense: "Hiện tại tiếp diễn",
+                            tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn", "Hiện tại tiếp diễn", "Hiện tại hoàn thành"],
+                            conjugatedHint: "We + are looking for (am/is/are + V-ing)",
+                            tenseReason: "Hành động đang diễn ra xung quanh thời điểm nói ('dạo này')",
+                            en: "We are looking for a new apartment these days.",
+                            accepted: [
+                                "We're looking for a new apartment these days.",
+                                "These days we are looking for a new apartment.",
+                                "These days we're looking for a new apartment."
+                            ],
+                            exp: "Việc tìm nhà đang diễn ra trong giai đoạn hiện tại ('dạo này') → dùng Hiện tại tiếp diễn: 'are + V-ing' (are looking for)."
+                        },
+                        {
+                            vn: "Tôi đã làm việc ở công ty này được 5 năm rồi.",
+                            vocab: "at this company / for this company (ở công ty này) · for 5 years (được 5 năm)",
+                            subject: "I",
+                            subjectOptions: ["I", "This company", "5 years"],
+                            verb: "work",
+                            verbOptions: ["work", "start", "leave"],
+                            tense: "Hiện tại hoàn thành",
+                            tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn", "Hiện tại tiếp diễn", "Hiện tại hoàn thành"],
+                            conjugatedHint: "I + have worked (have/has + V3/ed)",
+                            tenseReason: "Sự việc bắt đầu trong quá khứ và vẫn kéo dài đến hiện tại",
+                            en: "I have worked at this company for 5 years.",
+                            accepted: [
+                                "I have worked for this company for 5 years.",
+                                "I have worked in this company for 5 years.",
+                                "I've worked at this company for 5 years.",
+                                "I've worked for this company for 5 years.",
+                                "I have worked at this company for five years.",
+                                "I have worked for this company for five years."
+                            ],
+                            exp: "Làm việc từ quá khứ và đến nay vẫn còn làm ('được 5 năm rồi') → dùng Hiện tại hoàn thành: 'have + V3/ed' (have worked)."
+                        }
                     ]}
                 />
                 </section>
@@ -504,12 +878,12 @@ const FormatVerb = ({ text }) => {
                             <FormulaBox parts={["S", "+", "tobe", "+", "adj"]} color="emerald" align="left" />
                         </div>
                         <p className="text-sm text-slate-700 mb-5 font-medium flex-1">
-                            Dùng để miêu tả <strong className="text-rose-600 font-bold">tính chất, trạng thái, cảm xúc</strong>.
+                            Dùng để miêu tả <strong className="text-rose-600 font-bold">cảm xúc, tình trạng, tính cách</strong> hoặc <strong className="text-rose-600 font-bold">đặc điểm của sự vật</strong>.
                         </p>
                         <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Cảm xúc</span><br/><span class='mt-1.5 inline-block'>I <strong class='text-emerald-600'>am</strong> very tired today.</span>" vn="Hôm nay tôi rất mệt." />
-                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Tính chất</span><br/><span class='mt-1.5 inline-block'>The VSTEP exam <strong class='text-emerald-600'>is</strong> extremely important.</span>" vn="Kỳ thi VSTEP cực kỳ quan trọng." />
-                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Trạng thái</span><br/><span class='mt-1.5 inline-block'>The weather <strong class='text-emerald-600'>is</strong> beautiful today.</span>" vn="Hôm nay thời tiết rất đẹp." />
+                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Cảm xúc / Tình trạng</span><br/><span class='mt-1.5 inline-block'>I <strong class='text-emerald-600'>am</strong> very busy today.</span>" vn="Hôm nay tôi rất bận." />
+                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Tính cách con người</span><br/><span class='mt-1.5 inline-block'>My coworkers <strong class='text-emerald-600'>are</strong> very friendly.</span>" vn="Đồng nghiệp của tôi rất thân thiện." />
+                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Đặc điểm sự vật</span><br/><span class='mt-1.5 inline-block'>This shirt <strong class='text-emerald-600'>is</strong> too expensive.</span>" vn="Chiếc áo này đắt quá." />
                         </div>
                         </div>
                         
@@ -518,36 +892,32 @@ const FormatVerb = ({ text }) => {
                             <FormulaBox parts={["S", "+", "tobe", "+", "N - Noun Phr."]} color="emerald" align="left" />
                         </div>
                         <p className="text-sm text-slate-700 mb-5 font-medium flex-1">
-                            Dùng để <strong className="text-rose-600 font-bold">định nghĩa</strong>, giới thiệu <strong className="text-rose-600 font-bold">nghề nghiệp, sự vật, sự việc</strong>.
+                            Dùng để giới thiệu <strong className="text-rose-600 font-bold">nghề nghiệp, mối quan hệ</strong> hoặc <strong className="text-rose-600 font-bold">tên gọi của sự vật</strong>.
                         </p>
                         <div className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm space-y-3">
-                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Số ít</span><br/><span class='mt-1.5 inline-block'>She <strong class='text-emerald-600'>is</strong> a dedicated teacher.</span>" vn="Cô ấy là một giáo viên tận tâm." />
-                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Số nhiều</span><br/><span class='mt-1.5 inline-block'>They <strong class='text-emerald-600'>are</strong> students at National University.</span>" vn="Họ là sinh viên trường Đại học Quốc gia." />
-                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Không đếm được</span><br/><span class='mt-1.5 inline-block'>Water <strong class='text-emerald-600'>is</strong> an essential resource.</span>" vn="Nước là một nguồn tài nguyên thiết yếu." />
+                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Nghề nghiệp / Vai trò</span><br/><span class='mt-1.5 inline-block'>She <strong class='text-emerald-600'>is</strong> an accountant at my company.</span>" vn="Cô ấy là kế toán ở công ty tôi." />
+                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Mối quan hệ</span><br/><span class='mt-1.5 inline-block'>They <strong class='text-emerald-600'>are</strong> my close friends.</span>" vn="Họ là những người bạn thân của tôi." />
+                            <ClickableSentence en="<span class='text-[10px] font-bold text-emerald-600 border border-emerald-300 px-1.5 py-0.5 rounded mr-2 uppercase bg-emerald-100 tracking-wider shadow-sm'>Giới thiệu sự vật</span><br/><span class='mt-1.5 inline-block'>This <strong class='text-emerald-600'>is</strong> my new phone number.</span>" vn="Đây là số điện thoại mới của tôi." />
                         </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <TenseBlock 
-                        color="emerald" title="Hiện tại đơn" tenseType="present"
-                        forms={[ { type: 'khangding', parts: ["S", "+", "am - is - are", "+", "..."] }, { type: 'phuding', parts: ["S", "+", "am not - isn't - aren't", "+", "..."] } ]}
-                        usages={[ { desc: "Nói về một sự thật hiển nhiên, tình trạng hiện tại", pos: [ { en: "I <strong class='text-emerald-600'>am</strong> a freelance designer.", vn: "Tôi là một nhà thiết kế tự do." }, { en: "This policy <strong class='text-emerald-600'>is</strong> very important.", vn: "Chính sách này rất quan trọng." } ], neg: [ { en: "These products <strong class='text-emerald-600'>aren't</strong> expensive.", vn: "Những sản phẩm này không đắt." }, { en: "I <strong class='text-emerald-600'>am not</strong> satisfied with the service.", vn: "Tôi không hài lòng với dịch vụ." } ] } ]}
-                    />
-                    <TenseBlock 
-                        color="emerald" title="Quá khứ đơn" tenseType="past"
-                        forms={[ { type: 'khangding', parts: ["S", "+", "was - were", "+", "..."] }, { type: 'phuding', parts: ["S", "+", "wasn't - weren't", "+", "..."] } ]}
-                        usages={[ { desc: "Nói về một sự thật đã từng đúng trong quá khứ", pos: [ { en: "The meeting <strong class='text-emerald-600'>was</strong> successful.", vn: "Cuộc họp đã diễn ra thành công." }, { en: "They <strong class='text-emerald-600'>were</strong> my university classmates.", vn: "Họ từng là bạn học đại học của tôi." } ], neg: [ { en: "The customer service <strong class='text-emerald-600'>wasn't</strong> good.", vn: "Dịch vụ chăm sóc khách hàng đã không được tốt." }, { en: "We <strong class='text-emerald-600'>weren't</strong> at the office yesterday.", vn: "Hôm qua chúng tôi không có ở văn phòng." } ] } ]}
-                    />
-                    <div className="md:col-span-2">
-                    <TenseBlock 
-                        color="emerald" title="Tương lai đơn" tenseType="future"
-                        forms={[ { type: 'khangding', parts: ["S", "+", "will be", "+", "..."] }, { type: 'phuding', parts: ["S", "+", "won't be", "+", "..."] } ]}
-                        usages={[ { desc: "Nói về một dự đoán trạng thái trong tương lai", pos: [ { en: "The weather <strong class='text-emerald-600'>will be</strong> better tomorrow.", vn: "Ngày mai thời tiết sẽ tốt hơn." }, { en: "This project <strong class='text-emerald-600'>will be</strong> a great success.", vn: "Dự án này sẽ là một thành công lớn." } ], neg: [ { en: "The traffic <strong class='text-emerald-600'>won't be</strong> heavy at noon.", vn: "Giao thông sẽ không bị kẹt xe vào buổi trưa đâu." }, { en: "I <strong class='text-emerald-600'>won't be</strong> available next week.", vn: "Tuần sau tôi sẽ không rảnh." } ] } ]}
-                    />
-                    </div>
-                </div>
+                <TenseBlock 
+                    color="emerald" title="Hiện tại đơn" tenseType="present"
+                    forms={[ { type: 'khangding', parts: ["S", "+", "am - is - are", "+", "..."] }, { type: 'phuding', parts: ["S", "+", "am not - isn't - aren't", "+", "..."] } ]}
+                    usages={[ { desc: "Nói về một sự thật hiển nhiên, tình trạng hiện tại", pos: [ { en: "I <strong class='text-emerald-600'>am</strong> a freelance designer.", vn: "Tôi là một nhà thiết kế tự do." }, { en: "This policy <strong class='text-emerald-600'>is</strong> very important.", vn: "Chính sách này rất quan trọng." } ], neg: [ { en: "These products <strong class='text-emerald-600'>aren't</strong> expensive.", vn: "Những sản phẩm này không đắt." }, { en: "I <strong class='text-emerald-600'>am not</strong> satisfied with the service.", vn: "Tôi không hài lòng với dịch vụ." } ] } ]}
+                />
+                <TenseBlock 
+                    color="emerald" title="Quá khứ đơn" tenseType="past"
+                    forms={[ { type: 'khangding', parts: ["S", "+", "was - were", "+", "..."] }, { type: 'phuding', parts: ["S", "+", "wasn't - weren't", "+", "..."] } ]}
+                    usages={[ { desc: "Nói về một sự thật đã từng đúng trong quá khứ", pos: [ { en: "The meeting <strong class='text-emerald-600'>was</strong> successful.", vn: "Cuộc họp đã diễn ra thành công." }, { en: "They <strong class='text-emerald-600'>were</strong> my university classmates.", vn: "Họ từng là bạn học đại học của tôi." } ], neg: [ { en: "The customer service <strong class='text-emerald-600'>wasn't</strong> good.", vn: "Dịch vụ chăm sóc khách hàng đã không được tốt." }, { en: "We <strong class='text-emerald-600'>weren't</strong> at the office yesterday.", vn: "Hôm qua chúng tôi không có ở văn phòng." } ] } ]}
+                />
+                <TenseBlock 
+                    color="emerald" title="Tương lai đơn" tenseType="future"
+                    forms={[ { type: 'khangding', parts: ["S", "+", "will be", "+", "..."] }, { type: 'phuding', parts: ["S", "+", "won't be", "+", "..."] } ]}
+                    usages={[ { desc: "Nói về một dự đoán trạng thái trong tương lai", pos: [ { en: "The weather <strong class='text-emerald-600'>will be</strong> better tomorrow.", vn: "Ngày mai thời tiết sẽ tốt hơn." }, { en: "This project <strong class='text-emerald-600'>will be</strong> a great success.", vn: "Dự án này sẽ là một thành công lớn." } ], neg: [ { en: "The traffic <strong class='text-emerald-600'>won't be</strong> heavy at noon.", vn: "Giao thông sẽ không bị kẹt xe vào buổi trưa đâu." }, { en: "I <strong class='text-emerald-600'>won't be</strong> available next week.", vn: "Tuần sau tôi sẽ không rảnh." } ] } ]}
+                />
 
                 <MiniQuiz 
                     color="emerald" num="1" title="Bài tập: Chọn động từ tobe theo thời gian" desc="Lưu ý các từ khóa chỉ thời gian ở Quá khứ, Hiện tại, Tương lai (7 câu)."
