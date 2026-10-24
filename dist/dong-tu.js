@@ -467,7 +467,7 @@ var TenseBlock = function TenseBlock(_ref5) {
   })))));
 };
 var normalizeTranslation = function normalizeTranslation(text) {
-  return String(text || "").replace(/[‘’]/g, "'").replace(/\bI'm\b/gi, "i am").replace(/\bI'll\b/gi, "i will").replace(/\bI've\b/gi, "i have").replace(/\bwe've\b/gi, "we have").replace(/\bthey've\b/gi, "they have").replace(/\bwe're\b/gi, "we are").replace(/\bshe's\b/gi, "she has").replace(/\bhe's\b/gi, "he has").replace(/\bdon't\b/gi, "do not").replace(/\bdoesn't\b/gi, "does not").replace(/\bdidn't\b/gi, "did not").replace(/\bwon't\b/gi, "will not").replace(/\bhaven't\b/gi, "have not").replace(/\bhasn't\b/gi, "has not").replace(/\baren't\b/gi, "are not").replace(/\bisn't\b/gi, "is not").replace(/\bp\.m\.\b/gi, "pm").replace(/\ba\.m\.\b/gi, "am").toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  return String(text || "").replace(/[‘’]/g, "'").replace(/\bI'm\b/gi, "i am").replace(/\bI'll\b/gi, "i will").replace(/\bI've\b/gi, "i have").replace(/\bwe've\b/gi, "we have").replace(/\bthey've\b/gi, "they have").replace(/\bwe're\b/gi, "we are").replace(/\bthey're\b/gi, "they are").replace(/\byou're\b/gi, "you are").replace(/\bit's\b/gi, "it is").replace(/\bshe's\b/gi, "she has").replace(/\bhe's\b/gi, "he has").replace(/\bdon't\b/gi, "do not").replace(/\bdoesn't\b/gi, "does not").replace(/\bdidn't\b/gi, "did not").replace(/\bwon't\b/gi, "will not").replace(/\bhaven't\b/gi, "have not").replace(/\bhasn't\b/gi, "has not").replace(/\baren't\b/gi, "are not").replace(/\bisn't\b/gi, "is not").replace(/\bwasn't\b/gi, "was not").replace(/\bweren't\b/gi, "were not").replace(/\bp\.m\.\b/gi, "pm").replace(/\ba\.m\.\b/gi, "am").toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
 };
 var VerbTranslationExercise = function VerbTranslationExercise(_ref6) {
   var num = _ref6.num,
@@ -837,28 +837,49 @@ var VerbModule = function VerbModule() {
 // --- CÁC PHÂN ĐOẠN CỦA MÔ ĐUN ---
 
 function SectionIntro() {
+  var scrollToSection = function scrollToSection(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  };
   return /*#__PURE__*/React.createElement("div", {
     className: "grid grid-cols-1 md:grid-cols-3 gap-4 mb-12"
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "bg-blue-50 border border-blue-200 p-5 rounded-2xl shadow-sm"
+  }, /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: function onClick() {
+      return scrollToSection("section-regular-verbs");
+    },
+    className: "bg-blue-50 hover:bg-blue-100/80 border border-blue-200 hover:border-blue-300 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all text-left cursor-pointer group"
   }, /*#__PURE__*/React.createElement(Activity, {
-    className: "text-blue-600 mb-3 w-8 h-8"
+    className: "text-blue-600 mb-3 w-8 h-8 group-hover:scale-110 transition-transform"
   }), /*#__PURE__*/React.createElement("h3", {
     className: "font-bold text-blue-900 text-lg mb-1"
   }, "1. \u0110\u1ED9ng t\u1EEB th\u01B0\u1EDDng"), /*#__PURE__*/React.createElement("p", {
     className: "text-sm text-blue-700/80"
-  }, "Di\u1EC5n t\u1EA3 h\xE0nh \u0111\u1ED9ng (ch\u1EA1y, nh\u1EA3y, \u0103n, ng\u1EE7...).")), /*#__PURE__*/React.createElement("div", {
-    className: "bg-emerald-50 border border-emerald-200 p-5 rounded-2xl shadow-sm"
+  }, "Di\u1EC5n t\u1EA3 h\xE0nh \u0111\u1ED9ng (ch\u1EA1y, nh\u1EA3y, \u0103n, ng\u1EE7...).")), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: function onClick() {
+      return scrollToSection("section-tobe-verbs");
+    },
+    className: "bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200 hover:border-emerald-300 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all text-left cursor-pointer group"
   }, /*#__PURE__*/React.createElement(Layers, {
-    className: "text-emerald-600 mb-3 w-8 h-8"
+    className: "text-emerald-600 mb-3 w-8 h-8 group-hover:scale-110 transition-transform"
   }), /*#__PURE__*/React.createElement("h3", {
     className: "font-bold text-emerald-900 text-lg mb-1"
   }, "2. \u0110\u1ED9ng t\u1EEB tobe"), /*#__PURE__*/React.createElement("p", {
     className: "text-sm text-emerald-700/80"
-  }, "Di\u1EC5n t\u1EA3 tr\u1EA1ng th\xE1i (th\xEC, l\xE0, \u1EDF).")), /*#__PURE__*/React.createElement("div", {
-    className: "bg-amber-50 border border-amber-200 p-5 rounded-2xl shadow-sm"
+  }, "Di\u1EC5n t\u1EA3 tr\u1EA1ng th\xE1i (th\xEC, l\xE0, \u1EDF).")), /*#__PURE__*/React.createElement("button", {
+    type: "button",
+    onClick: function onClick() {
+      return scrollToSection("section-modal-verbs");
+    },
+    className: "bg-amber-50 hover:bg-amber-100/80 border border-amber-200 hover:border-amber-300 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all text-left cursor-pointer group"
   }, /*#__PURE__*/React.createElement(Zap, {
-    className: "text-amber-600 mb-3 w-8 h-8"
+    className: "text-amber-600 mb-3 w-8 h-8 group-hover:scale-110 transition-transform"
   }), /*#__PURE__*/React.createElement("h3", {
     className: "font-bold text-amber-900 text-lg mb-1"
   }, "3. Khi\u1EBFm khuy\u1EBFt"), /*#__PURE__*/React.createElement("p", {
@@ -867,7 +888,8 @@ function SectionIntro() {
 }
 function SectionRegularVerbs() {
   return /*#__PURE__*/React.createElement("section", {
-    className: "mb-14 relative z-20"
+    id: "section-regular-verbs",
+    className: "mb-14 relative z-20 scroll-mt-20 md:scroll-mt-8"
   }, /*#__PURE__*/React.createElement("div", {
     className: "mb-6"
   }, /*#__PURE__*/React.createElement("h2", {
@@ -1203,7 +1225,8 @@ function SectionRegularVerbs() {
 }
 function SectionToBeVerbs() {
   return /*#__PURE__*/React.createElement("section", {
-    className: "mb-14 relative z-20"
+    id: "section-tobe-verbs",
+    className: "mb-14 relative z-20 scroll-mt-20 md:scroll-mt-8"
   }, /*#__PURE__*/React.createElement("div", {
     className: "mb-6"
   }, /*#__PURE__*/React.createElement("h2", {
@@ -1352,87 +1375,108 @@ function SectionToBeVerbs() {
         vn: "Tuần sau tôi sẽ không rảnh."
       }]
     }]
-  }), /*#__PURE__*/React.createElement(MiniQuiz, {
-    color: "emerald",
+  }), /*#__PURE__*/React.createElement(VerbTranslationExercise, {
     num: "1",
-    title: "B\xE0i t\u1EADp: Ch\u1ECDn \u0111\u1ED9ng t\u1EEB tobe theo th\u1EDDi gian",
-    desc: "L\u01B0u \xFD c\xE1c t\u1EEB kh\xF3a ch\u1EC9 th\u1EDDi gian \u1EDF Qu\xE1 kh\u1EE9, Hi\u1EC7n t\u1EA1i, T\u01B0\u01A1ng lai (7 c\xE2u).",
-    questions: [{
-      text: "They ________ my university classmates 5 years ago.",
-      options: ["are", "were", "was"],
-      correct: "were",
-      exp: "'5 years ago' -> Quá khứ đơn. 'They' đi với 'were'."
+    title: "B\xE0i t\u1EADp: Di\u1EC5n \u0111\u1EA1t c\xE2u v\u1EDBi \u0111\u1ED9ng t\u1EEB tobe sang ti\u1EBFng Anh",
+    desc: "V\u1EDBi m\u1ED7i c\xE2u ti\u1EBFng Vi\u1EC7t d\u01B0\u1EDBi \u0111\xE2y, h\xE3y x\xE1c \u0111\u1ECBnh Ch\u1EE7 ng\u1EEF, C\u1EE5m v\u1ECB ng\u1EEF (tobe + T\xEDnh t\u1EEB / Danh t\u1EEB), Th\xEC c\u1EA7n chia, sau \u0111\xF3 vi\u1EBFt c\xE2u ti\u1EBFng Anh ho\xE0n ch\u1EC9nh (7 c\xE2u).",
+    items: [{
+      vn: "Chính sách công ty này rất quan trọng.",
+      vocab: "this company policy (chính sách công ty này) · very (rất) · important (quan trọng - adj)",
+      subject: "This company policy",
+      subjectOptions: ["This company policy", "This company", "Very important"],
+      verb: "be + important",
+      verbOptions: ["be + important", "be + importance", "have + important"],
+      tense: "Hiện tại đơn",
+      tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn"],
+      conjugatedHint: "This company policy + is + very important",
+      tenseReason: "Miêu tả tính chất, sự thật ở hiện tại (S số ít + is + adj)",
+      en: "This company policy is very important.",
+      accepted: ["This company's policy is very important."],
+      exp: "Miêu tả đặc điểm ở hiện tại → dùng Hiện tại đơn. Chủ ngữ 'This company policy' là số ít nên đi với tobe 'is' + tính từ 'important'."
     }, {
-      text: "Don't worry. Tomorrow ________ a better day.",
-      options: ["is", "was", "will be"],
-      correct: "will be",
-      exp: "'Tomorrow' -> Tương lai đơn. Cần dùng 'will be'."
+      vn: "Cô ấy là một kế toán viên tận tâm ở công ty tôi.",
+      vocab: "a dedicated accountant (một kế toán viên tận tâm) · at my company (ở công ty tôi)",
+      subject: "She",
+      subjectOptions: ["She", "An accountant", "My company"],
+      verb: "be + a dedicated accountant",
+      verbOptions: ["be + a dedicated accountant", "be + dedicated", "work + accountant"],
+      tense: "Hiện tại đơn",
+      tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn"],
+      conjugatedHint: "She + is + a dedicated accountant",
+      tenseReason: "Giới thiệu nghề nghiệp ở hiện tại (S số ít + is + cụm danh từ)",
+      en: "She is a dedicated accountant at my company.",
+      accepted: ["She's a dedicated accountant at my company.", "She is a dedicated accountant in my company.", "She's a dedicated accountant in my company."],
+      exp: "Giới thiệu nghề nghiệp ở hiện tại → dùng Hiện tại đơn. Chủ ngữ 'She' đi với tobe 'is' + cụm danh từ 'a dedicated accountant'."
     }, {
-      text: "I ________ very happy right now.",
-      options: ["am", "was", "will be"],
-      correct: "am",
-      exp: "'right now' -> Hiện tại. 'I' đi với 'am'."
+      vn: "Đồng nghiệp của tôi rất thân thiện và nhiệt tình.",
+      vocab: "my coworkers (đồng nghiệp của tôi) · friendly (thân thiện) · enthusiastic (nhiệt tình)",
+      subject: "My coworkers",
+      subjectOptions: ["My coworkers", "I", "Friendly"],
+      verb: "be + friendly and enthusiastic",
+      verbOptions: ["be + friendly and enthusiastic", "be + friend", "do + friendly"],
+      tense: "Hiện tại đơn",
+      tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn"],
+      conjugatedHint: "My coworkers + are + very friendly and enthusiastic",
+      tenseReason: "Miêu tả tính cách ở hiện tại (S số nhiều + are + adj)",
+      en: "My coworkers are very friendly and enthusiastic.",
+      accepted: ["My colleagues are very friendly and enthusiastic.", "My co-workers are very friendly and enthusiastic."],
+      exp: "Chủ ngữ 'My coworkers' là danh từ số nhiều ở hiện tại → dùng tobe 'are' đi kèm tính từ chỉ tính cách."
     }, {
-      text: "The weather ________ terrible last weekend.",
-      options: ["is", "was", "were"],
-      correct: "was",
-      exp: "'last weekend' -> Quá khứ đơn. 'The weather' (số ít) đi với 'was'."
+      vn: "Cách đây 5 năm, họ là bạn học đại học của tôi.",
+      vocab: "my university classmates (bạn học đại học của tôi) · 5 years ago (cách đây 5 năm)",
+      subject: "They",
+      subjectOptions: ["They", "My university", "5 years ago"],
+      verb: "be + my university classmates",
+      verbOptions: ["be + my university classmates", "be + university", "study + classmates"],
+      tense: "Quá khứ đơn",
+      tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn"],
+      conjugatedHint: "They + were + my university classmates",
+      tenseReason: "Mối quan hệ trong quá khứ ('5 years ago' → S số nhiều + were + N)",
+      en: "They were my university classmates 5 years ago.",
+      accepted: ["5 years ago they were my university classmates.", "They were my university classmates five years ago.", "Five years ago they were my university classmates.", "They were my college classmates 5 years ago."],
+      exp: "Có dấu hiệu '5 years ago' (5 năm trước) → dùng Quá khứ đơn. Chủ ngữ 'They' là số nhiều nên dùng tobe 'were'."
     }, {
-      text: "She ________ at the office tomorrow morning.",
-      options: ["isn't", "wasn't", "won't be"],
-      correct: "won't be",
-      exp: "'tomorrow morning' -> Tương lai đơn phủ định là 'won't be'."
+      vn: "Cuối tuần trước thời tiết rất tệ.",
+      vocab: "the weather (thời tiết) · terrible (tệ / kinh khủng - adj) · last weekend (cuối tuần trước)",
+      subject: "The weather",
+      subjectOptions: ["The weather", "Last weekend", "Terrible"],
+      verb: "be + terrible",
+      verbOptions: ["be + terrible", "be + terribly", "make + terrible"],
+      tense: "Quá khứ đơn",
+      tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn"],
+      conjugatedHint: "The weather + was + very terrible",
+      tenseReason: "Trạng thái đã qua ở quá khứ ('last weekend' → S số ít + was + adj)",
+      en: "The weather was very terrible last weekend.",
+      accepted: ["The weather was terrible last weekend.", "Last weekend the weather was very terrible.", "Last weekend the weather was terrible.", "The weather was really terrible last weekend."],
+      exp: "Dấu hiệu 'last weekend' (cuối tuần trước) → dùng Quá khứ đơn. 'The weather' là chủ ngữ số ít nên đi với 'was'."
     }, {
-      text: "It ________ widely known that smoking causes cancer.",
-      options: ["is", "was", "will be"],
-      correct: "is",
-      exp: "Đây là một sự thật hiển nhiên (luôn đúng) trong xã hội, dùng thì Hiện tại đơn."
+      vn: "Hôm qua chúng tôi không có mặt ở văn phòng.",
+      vocab: "at the office (ở văn phòng) · yesterday (hôm qua)",
+      subject: "We",
+      subjectOptions: ["We", "The office", "Yesterday"],
+      verb: "not be + at the office",
+      verbOptions: ["not be + at the office", "didn't + at the office", "not stay + office"],
+      tense: "Quá khứ đơn",
+      tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn"],
+      conjugatedHint: "We + weren't + at the office",
+      tenseReason: "Vị trí/trạng thái phủ định trong quá khứ ('yesterday' → weren't)",
+      en: "We weren't at the office yesterday.",
+      accepted: ["We were not at the office yesterday.", "Yesterday we weren't at the office.", "Yesterday we were not at the office."],
+      exp: "Chỉ vị trí/sự có mặt ở quá khứ ('yesterday') dạng phủ định với chủ ngữ 'We' → dùng 'weren't' (were not)."
     }, {
-      text: "The new regulations ________ effective starting next Monday.",
-      options: ["are", "were", "will be"],
-      correct: "will be",
-      exp: "Dấu hiệu 'next Monday' (thứ Hai tới) yêu cầu thì Tương lai đơn để chỉ trạng thái bắt đầu có hiệu lực."
-    }]
-  }), /*#__PURE__*/React.createElement(MiniQuiz, {
-    color: "emerald",
-    num: "2",
-    title: "B\xE0i t\u1EADp: Tobe \u0111i k\xE8m T\xEDnh t\u1EEB / Danh t\u1EEB",
-    desc: "X\xE1c \u0111\u1ECBnh \u0111\xFAng t\u1EEB lo\u1EA1i (adj hay noun) \u0111i sau \u0111\u1ED9ng t\u1EEB tobe (7 c\xE2u).",
-    questions: [{
-      text: "This company policy is very ________.",
-      options: ["importance", "important"],
-      correct: "important",
-      exp: "Cần một Tính từ (important - quan trọng) để miêu tả tính chất cho chủ ngữ 'policy'."
-    }, {
-      text: "She is a dedicated ________.",
-      options: ["teach", "teacher"],
-      correct: "teacher",
-      exp: "Cần một Danh từ chỉ người (teacher - giáo viên) đứng sau mạo từ 'a' để chỉ nghề nghiệp."
-    }, {
-      text: "The soup smells good, but it is too ________.",
-      options: ["salt", "salty"],
-      correct: "salty",
-      exp: "Sử dụng tính từ (salty - mặn) để miêu tả tính trạng thái/tính chất của món súp."
-    }, {
-      text: "Those men ________ engineers.",
-      options: ["is", "are", "do"],
-      correct: "are",
-      exp: "'Those men' (những người đàn ông đó) là danh từ số nhiều, đi kèm với động từ tobe 'are'."
-    }, {
-      text: "Happiness ________ a choice.",
-      options: ["is", "has", "does"],
-      correct: "is",
-      exp: "'Happiness' (hạnh phúc) là danh từ không đếm được, dùng tobe số ít 'is'."
-    }, {
-      text: "The proliferation of fake news is highly ________.",
-      options: ["problem", "problematic"],
-      correct: "problematic",
-      exp: "'highly' là trạng từ bổ nghĩa cho một Tính từ phía sau (problematic - có vấn đề)."
-    }, {
-      text: "He proved to be a reliable ________ during the crisis.",
-      options: ["partner", "partnership"],
-      correct: "partner",
-      exp: "Chỉ người (một người cộng sự đáng tin cậy), ta dùng danh từ chỉ người 'partner' đếm được (có mạo từ 'a')."
+      vn: "Sáng mai cô ấy sẽ không rảnh.",
+      vocab: "available / free (rảnh rỗi - adj) · tomorrow morning (sáng mai)",
+      subject: "She",
+      subjectOptions: ["She", "Tomorrow morning", "Available"],
+      verb: "not be + available",
+      verbOptions: ["not be + available", "not + available", "doesn't + available"],
+      tense: "Tương lai đơn",
+      tenseOptions: ["Hiện tại đơn", "Quá khứ đơn", "Tương lai đơn"],
+      conjugatedHint: "She + won't be + available",
+      tenseReason: "Trạng thái phủ định trong tương lai ('tomorrow morning' → won't be + adj)",
+      en: "She won't be available tomorrow morning.",
+      accepted: ["She will not be available tomorrow morning.", "She won't be free tomorrow morning.", "She will not be free tomorrow morning.", "Tomorrow morning she won't be available.", "Tomorrow morning she will not be available.", "Tomorrow morning she won't be free.", "Tomorrow morning she will not be free."],
+      exp: "Dấu hiệu 'tomorrow morning' (sáng mai) + tính từ 'available/free' ở thể phủ định → dùng Tương lai đơn của tobe là 'won't be'."
     }]
   }));
 }
@@ -1670,7 +1714,8 @@ function SectionModalVerbs() {
     }]
   }];
   return /*#__PURE__*/React.createElement("section", {
-    className: "mb-14 relative z-20"
+    id: "section-modal-verbs",
+    className: "mb-14 relative z-20 scroll-mt-20 md:scroll-mt-8"
   }, /*#__PURE__*/React.createElement("div", {
     className: "mb-6"
   }, /*#__PURE__*/React.createElement("h2", {
